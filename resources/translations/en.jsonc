@@ -1,0 +1,23 @@
+{
+  "prefix": " [yellow][[red]MVP-Anthem[yellow]][default] ",
+  "mvp_main_menu_title": "MVP Anthem",
+  "mvp_categories_title": "Select Category",
+  "mvp_confirm_menu_title": "Equip {0}?",
+  "mvp_current_volume_option": "Current volume: {0}",
+  "mvp_change_volume_option": "Change Volume",
+  "mvp_current_mvp_option": "Current MVP: {0}",
+  "mvp_select_mvp_option": "Select MVP",
+  "mvp_remove_mvp_option": "Remove MVP",
+  "mvp_remove_mvp_title": "Remove {0} MVP?",
+  "mvp_remove_yes": "Yes",
+  "mvp_remove_no": "No",
+  "mvp_preview_option": "No, Preview It First",
+  "mvp_selected": "You have selected [red]{0}[default] mvp!",
+  "volume_selected": "Your volume is now set to [yellow]{0}[default]%",
+  "mvp_preview": "Playing [red]{0}[default] only for you.",
+  "mvp_preview_0_volume": "Your volume is set to 0, therefore u can't preview this mvp!",
+  "mvp.1.chat": " [blue]{0}[default] is the MVP! Playing: [red]{1}[default].",
+  "mvp.1.html": "<font color='red'>{0}</font> is the MVP!<br><b>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</b><br>Playing <font color='yellow'>{1}</font>",
+  "mvp.2.chat": " [blue]{0}[default] is the MVP! Playing: [red]{1}[default].",
+  "mvp.2.html": "<font color='red'>{0}</font> is the MVP!<br><b>▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬</b><br>Playing <font color='yellow'>{1}</font>"
+}
