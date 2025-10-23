@@ -1,7 +1,7 @@
 # MVP-Anthem
 
 # Installation
-## - Drag&Drop MVP_Anthem in swiftlys2/plugins
+## -Drag&Drop MVP_Anthem in swiftlys2/plugins
 
 # Requirements
 - **[** [**SwiftlyS2**](https://github.com/swiftly-solution/swiftlys2) **]**
