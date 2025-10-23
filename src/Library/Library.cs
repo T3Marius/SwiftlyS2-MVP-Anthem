@@ -33,7 +33,6 @@ public class Library
 
         foreach (var player in _core.PlayerManager.GetAllPlayers())
         {
-            ShowWinPanelHtml(player, $"MVP OF THE ROUND: {mvpPlayer.Controller?.PlayerName}");
             if (_config.ShakePlayerScreen)
             {
                 _core.NetMessage.Send<CUserMessageShake>(msg =>
