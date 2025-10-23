@@ -48,7 +48,7 @@ public class MenuManager
             menu.Builder.AddSubmenu(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_mvp_option"], () => ShowRemoveMvpMenu(player, menu, mvpSettings.MVPName));
         }
 
-        menu.Builder.AddSlider(_core.Translation.GetPlayerLocalizer(player)["mvp_change_volume_option"], 0, 100, mvpSettings.Volume, 3, (p, value) =>
+        menu.Builder.AddSlider(_core.Translation.GetPlayerLocalizer(player)["mvp_change_volume_option"], 0, 100, mvpSettings.Volume, 20, (p, value) =>
         {
             _core.Scheduler.NextTick(async () =>
             {
