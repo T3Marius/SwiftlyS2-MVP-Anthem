@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
+using SwiftlyS2.Shared.GameEventDefinitions;
 using SwiftlyS2.Shared.Players;
 using SwiftlyS2.Shared.ProtobufDefinitions;
 
@@ -26,13 +27,13 @@ public class Library
         if (mvpPlayer == null)
             return;
 
-
         float htmlTimer = _config.CenterHTMLTimer;
         float centerTimer = _config.CenterTimer;
         float alertTimer = _config.AlertTimer;
 
         foreach (var player in _core.PlayerManager.GetAllPlayers())
         {
+            ShowWinPanelHtml(player, $"MVP OF THE ROUND: {mvpPlayer.Controller?.PlayerName}");
             if (_config.ShakePlayerScreen)
             {
                 _core.NetMessage.Send<CUserMessageShake>(msg =>
@@ -111,5 +112,19 @@ public class Library
                 });
             }
         }
+    }
+    public void ShowWinPanelHtml(IPlayer player, string html)
+    {
+        if (player == null)
+            return;
+
+        _core.GameEvent.Fire<EventCsWinPanelRound>(@event =>
+        {
+            @event.ShowTimerDefend = false;
+            @event.ShowTimerAttack = false;
+            @event.TimerTime = -1;
+            @event.FunfactPlayer = player.PlayerID;
+            @event.FunfactToken = $"{html}";
+        });
     }
 }

@@ -23,8 +23,11 @@ public class MenuManager
     }
     public void ShowMVP(IPlayer player)
     {
-        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_main_menu_title"], _config.FreezePlayerInMenu, _config.EnableMenuSounds, true);
-        menu.Color = new(0, 255, 0);
+        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_main_menu_title"]);
+        menu.RenderColor = new(0, 255, 0);
+
+        menu.ShouldFreeze = _config.FreezePlayerInMenu;
+        menu.HasSound = _config.EnableMenuSounds;
 
         var mvpSettings = _databaseManager.GetMvp(player);
         float defaultVolume = _config.DefaultVolume;
@@ -38,18 +41,14 @@ public class MenuManager
             return;
         }
 
-        menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_current_volume_option", mvpSettings.Volume], (p, o, m) => { }, true);
+        menu.Builder.AddText(_core.Translation.GetPlayerLocalizer(player)["mvp_current_volume_option", mvpSettings.Volume]);
         if (!string.IsNullOrEmpty(mvpSettings.MVPName))
         {
-            menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_current_mvp_option", mvpSettings.MVPName], (p, o, m) => { }, true);
-            menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_mvp_option"], (p, o, m) =>
-            {
-                ShowRemoveMvpMenu(p, menu, mvpSettings.MVPName);
-            });
+            menu.Builder.AddText(_core.Translation.GetPlayerLocalizer(player)["mvp_current_mvp_option", mvpSettings.MVPName]);
+            menu.Builder.AddSubmenu(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_mvp_option"], () => ShowRemoveMvpMenu(player, menu, mvpSettings.MVPName));
         }
 
-        List<object> volumeValues = new List<object> { 0f, 20f, 40f, 60f, 80f, 100f };
-        menu.AddSliderOption(_core.Translation.GetPlayerLocalizer(player)["mvp_change_volume_option"], volumeValues, mvpSettings.Volume, 3, (p, o, m, index, value) =>
+        menu.Builder.AddSlider(_core.Translation.GetPlayerLocalizer(player)["mvp_change_volume_option"], 0, 100, mvpSettings.Volume, 3, (p, value) =>
         {
             _core.Scheduler.NextTick(async () =>
             {
@@ -59,18 +58,18 @@ public class MenuManager
             p.SendMessage(MessageType.Chat, _core.Translation.GetPlayerLocalizer(player)["prefix"] + _core.Translation.GetPlayerLocalizer(player)["volume_selected", value]);
         });
 
-        menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_select_mvp_option"], (p, o, m) =>
-        {
-            ShowCategoryMenu(p, menu);
-        });
+        menu.Builder.AddSubmenu(_core.Translation.GetPlayerLocalizer(player)["mvp_select_mvp_option"], () => ShowCategoryMenu(player, menu));
 
         _core.Menus.OpenMenu(player, menu);
     }
-    private void ShowCategoryMenu(IPlayer player, IMenu parentMenu)
+    private IMenu ShowCategoryMenu(IPlayer player, IMenu parentMenu)
     {
-        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_categories_title"], _config.FreezePlayerInMenu, _config.EnableMenuSounds, true);
-        menu.ParentMenu = parentMenu;
-        menu.Color = new(0, 255, 0);
+        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_categories_title"]);
+        menu.Parent = parentMenu;
+        menu.RenderColor = new(0, 255, 0);
+
+        menu.ShouldFreeze = _config.FreezePlayerInMenu;
+        menu.HasSound = _config.EnableMenuSounds;
 
         Dictionary<string, List<KeyValuePair<string, MVP_Settings>>> accessibleMVPsByCategory = new();
 
@@ -93,42 +92,42 @@ public class MenuManager
             string categoryName = categoryEntry.Key;
             var accessibleMVPs = categoryEntry.Value;
 
-            menu.AddOption(categoryName, (p, o, m) =>
-            {
-                ShowMVPListMenu(p, m, categoryName, accessibleMVPs);
-            });
+            menu.Builder.AddSubmenu(categoryName, () => ShowMVPListMenu(player, menu, categoryName, accessibleMVPs));
         }
 
-        _core.Menus.OpenSubMenu(player, menu);
+        return menu;
     }
-    private void ShowMVPListMenu(IPlayer player, IMenu parentMenu, string categoryName, List<KeyValuePair<string, MVP_Settings>> mvps)
+    private IMenu ShowMVPListMenu(IPlayer player, IMenu parentMenu, string categoryName, List<KeyValuePair<string, MVP_Settings>> mvps)
     {
-        IMenu menu = _core.Menus.CreateMenu(categoryName, _config.FreezePlayerInMenu, _config.EnableMenuSounds, true);
-        menu.ParentMenu = parentMenu;
-        menu.Color = new(0, 255, 0);
+        IMenu menu = _core.Menus.CreateMenu(categoryName);
+        menu.Parent = parentMenu;
+        menu.RenderColor = new(0, 255, 0);
+
+        menu.ShouldFreeze = _config.FreezePlayerInMenu;
+        menu.HasSound = _config.EnableMenuSounds;
 
         foreach (var mvpEntry in mvps)
         {
             string mvpKey = mvpEntry.Key;
             MVP_Settings mvpSettings = mvpEntry.Value;
 
-            menu.AddOption(mvpSettings.MVPName, (p, o, m) =>
-            {
-                ShowConfirmMenu(p, m, mvpKey, mvpSettings);
-            });
+            menu.Builder.AddSubmenu(mvpSettings.MVPName, () => ShowConfirmMenu(player, menu, mvpKey, mvpSettings));
         }
 
-        _core.Menus.OpenSubMenu(player, menu);
+        return menu;
     }
-    private void ShowConfirmMenu(IPlayer player, IMenu parentMenu, string mvpKey, MVP_Settings mvpSettings)
+    private IMenu ShowConfirmMenu(IPlayer player, IMenu parentMenu, string mvpKey, MVP_Settings mvpSettings)
     {
-        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_confirm_menu_title", mvpSettings.MVPName], _config.FreezePlayerInMenu, _config.EnableMenuSounds, true);
-        menu.ParentMenu = parentMenu;
-        menu.Color = new(0, 255, 0);
+        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_confirm_menu_title", mvpSettings.MVPName]);
+        menu.Parent = parentMenu;
+        menu.RenderColor = new(0, 255, 0);
+
+        menu.ShouldFreeze = _config.FreezePlayerInMenu;
+        menu.HasSound = _config.EnableMenuSounds;
 
         var playerSettings = _databaseManager.GetMvp(player);
 
-        menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_yes"], (p, o, m) =>
+        menu.Builder.AddButton(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_yes"], (p) =>
         {
             string mvpName = mvpSettings.MVPName;
             string mvpSound = mvpSettings.MVPSound;
@@ -140,10 +139,10 @@ public class MenuManager
 
             p.SendMessage(MessageType.Chat, _core.Translation.GetPlayerLocalizer(player)["prefix"] + _core.Translation.GetPlayerLocalizer(player)["mvp_selected", mvpName]);
 
-            _core.Menus.CloseMenu(p);
+            menu.Close(p);
         });
 
-        menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_preview_option"], (p, o, m) =>
+        menu.Builder.AddButton(_core.Translation.GetPlayerLocalizer(player)["mvp_preview_option"], (p) =>
         {
             if (playerSettings == null)
                 return;
@@ -167,34 +166,36 @@ public class MenuManager
                 p.SendMessage(MessageType.Chat, _core.Translation.GetPlayerLocalizer(player)["prefix"] + _core.Translation.GetPlayerLocalizer(player)["mvp_preview_0_volume"]);
         });
 
-        menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_no"], (p, o, m) =>
+        menu.Builder.AddButton(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_no"], (p) =>
         {
-            ShowMVP(p);
+            menu.Close(p);
         });
 
-        _core.Menus.OpenSubMenu(player, menu);
+        return menu;
     }
-    private void ShowRemoveMvpMenu(IPlayer player, IMenu parentMenu, string mvpName)
+    private IMenu ShowRemoveMvpMenu(IPlayer player, IMenu parentMenu, string mvpName)
     {
-        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_mvp_title", mvpName], _config.FreezePlayerInMenu, _config.EnableMenuSounds, true);
-        menu.ParentMenu = parentMenu;
-        menu.Color = new(0, 255, 0);
+        IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_mvp_title", mvpName]);
+        menu.Parent = parentMenu;
+        menu.RenderColor = new(0, 255, 0);
 
-        menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_yes"], (p, o, m) =>
+        menu.ShouldFreeze = _config.FreezePlayerInMenu;
+        menu.HasSound = _config.EnableMenuSounds;
+
+        menu.Builder.AddButton(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_yes"], (p) =>
         {
             _core.Scheduler.NextTick(async () =>
             {
                 await _databaseManager.RemoveMvp(p);
             });
 
-            _core.Menus.CloseMenu(p);
+            menu.Close(p);
         });
 
-        menu.AddOption(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_no"], (p, o, m) =>
+        menu.Builder.AddButton(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_no"], (p) =>
         {
-            _core.Menus.CloseMenu(p);
+            menu.Close(p);
         });
-
-        _core.Menus.OpenSubMenu(player, menu);
+        return menu;
     }
 }
