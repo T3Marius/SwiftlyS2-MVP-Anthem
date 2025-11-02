@@ -5,8 +5,7 @@
 
 # Requirements
 - **[** [**SwiftlyS2**](https://github.com/swiftly-solution/swiftlys2) **]**
-- **[** [**MultiAddonManager**](https://github.com/Source2ZE/MultiAddonManager) **]**
-
+- **[** [**AudioApi**](https://github.com/SwiftlyS2-Plugins/Audio) **]**
 # Config
 ```jsonc
 {
@@ -63,4 +62,3 @@
 
 ## You use for testing my WorkshopAddon: **[** [**Workshop**](https://steamcommunity.com/sharedfiles/filedetails/?id=3450055137) **]**
 - Just add the addon id in multiaddongmanager.cfg and you can use the 2 mvp's.
-
