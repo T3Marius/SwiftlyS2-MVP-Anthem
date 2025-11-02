@@ -1,4 +1,3 @@
-using System.Windows.Input;
 using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.Commands;
@@ -23,10 +22,6 @@ public class CommandsManager
         {
             _core.Command.RegisterCommand(cmd, OnMvpCmd);
         }
-        foreach (var cmd in _config.Commands.VolumeCommands)
-        {
-            _core.Command.RegisterCommand(cmd, OnVolumeCmd);
-        }
     }
     public void OnMvpCmd(ICommandContext context)
     {
@@ -35,9 +30,5 @@ public class CommandsManager
 
 
         _menuManager.ShowMVP(context.Sender);
-    }
-    public void OnVolumeCmd(ICommandContext context)
-    {
-
     }
 }
