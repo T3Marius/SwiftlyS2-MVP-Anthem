@@ -10,7 +10,6 @@
 ```jsonc
 {
   "Main": {
-    "SoundEventFiles": ["soundevents/mvp_anthem.vsndevts"],
     "ShakePlayerScreen": true,
     "GiveRandomMVPOnFirstConnect": true,
     "FreezePlayerInMenu": true,
@@ -19,21 +18,18 @@
     "CenterHTMLTimer": 10.0,
     "CenterTimer": 10.0,
     "AlertTimer": 10.0,
+    "MenuColor": [255, 0, 0] // red
     "Commands": {
       "MVPCommands": [
         "mvp",
         "music"
-      ],
-      "VolumeCommands": [ // not yet implemented, you can safely ignore this.
-        "mvpvol",
-        "vol"
       ]
     },
     "MVPSettings": {
       "PUBLIC MVP": { // category
         "mvp.1": {
           "MVPName": "Flawless",
-          "MVPSound": "MVP_Flawless", // this is the sound that will be played.
+          "MVPSound": "mvp_sounds/flawless.mp3", // this is located at data/MVP_Anthem/mvp_sounds/
           "EnablePreview": true,
           "PrintToAlert": false,
           "PrintToCenter": false,
@@ -43,7 +39,7 @@
         },
         "mvp.2": {
           "MVPName": "Protection Charm",
-          "MVPSound": "MVP_ProtectionCharm",
+          "MVPSound": "mvp_sounds/protectioncharm.mp3",
           "EnablePreview": true,
           "PrintToAlert": false,
           "PrintToCenter": false,
@@ -56,9 +52,3 @@
   }
 }
 ```
-
-# Uploading Workshop Sounds Tutorial.
-- [CLICK HERE](https://youtu.be/ELnCfj0xGQ8)
-
-## You use for testing my WorkshopAddon: **[** [**Workshop**](https://steamcommunity.com/sharedfiles/filedetails/?id=3450055137) **]**
-- Just add the addon id in multiaddongmanager.cfg and you can use the 2 mvp's.
