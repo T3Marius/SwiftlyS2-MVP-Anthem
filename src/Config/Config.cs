@@ -2,7 +2,6 @@ namespace MVP_Anthem;
 
 public class PluginConfig
 {
-    public List<string> SoundEventFiles { get; set; } = new List<string>();
     public bool ShakePlayerScreen { get; set; } = true;
     public bool GiveRandomMVPOnFirstConnect { get; set; } = true;
     public bool FreezePlayerInMenu { get; set; } = true;
@@ -11,6 +10,7 @@ public class PluginConfig
     public float CenterHTMLTimer { get; set; } = 10.0f;
     public float CenterTimer { get; set; } = 10.0f;
     public float AlertTimer { get; set; } = 10.0f;
+    public List<int> MenuColor { get; set; } = [255, 0, 0];
     public Commands_Config Commands { get; set; } = new();
     public Dictionary<string, Dictionary<string, MVP_Settings>> MVPSettings { get; set; } = new()
     {
@@ -21,7 +21,7 @@ public class PluginConfig
                     "mvp.1", new MVP_Settings
                     {
                         MVPName = "Flawless",
-                        MVPSound = "MVP_Flawless",
+                        MVPPath = "mvp_sounds/flawless.mp3",
                         EnablePreview = true,
                         PrintToAlert = false,
                         PrintToCenter = false,
@@ -33,7 +33,7 @@ public class PluginConfig
                     "mvp.2", new MVP_Settings
                     {
                         MVPName = "Protection Charm",
-                        MVPSound = "MVP_ProtectionCharm",
+                        MVPPath = "mvp_sounds/protectioncharm.mp3",
                         EnablePreview = true,
                         PrintToAlert = false,
                         PrintToCenter = false,
@@ -55,7 +55,7 @@ public class Commands_Config
 public class MVP_Settings
 {
     public string MVPName { get; set; } = string.Empty;
-    public string MVPSound { get; set; } = string.Empty;
+    public string MVPPath { get; set; } = string.Empty;
     public bool EnablePreview { get; set; } = true;
     public bool PrintToAlert { get; set; } = false;
     public bool PrintToCenter { get; set; } = false;
