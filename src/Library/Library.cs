@@ -1,3 +1,4 @@
+using AudioApi;
 using Microsoft.Extensions.Options;
 using SwiftlyS2.Shared;
 using SwiftlyS2.Shared.GameEventDefinitions;
@@ -112,18 +113,13 @@ public class Library
             }
         }
     }
-    public void ShowWinPanelHtml(IPlayer player, string html)
+    public void PlaySound(IPlayer player, string filePath, float volume)
     {
-        if (player == null)
-            return;
+        IAudioChannelController controller = MVP_Anthem.AudioApi.UseChannel("mvp_anthem");
+        IAudioSource source = MVP_Anthem.AudioApi.DecodeFromFile(Path.Combine(_core.PluginDataDirectory, filePath));
+        controller.SetSource(source);
 
-        _core.GameEvent.Fire<EventCsWinPanelRound>(@event =>
-        {
-            @event.ShowTimerDefend = false;
-            @event.ShowTimerAttack = false;
-            @event.TimerTime = -1;
-            @event.FunfactPlayer = player.PlayerID;
-            @event.FunfactToken = $"{html}";
-        });
+        controller.SetVolume(player.PlayerID, volume);
+        controller.Play(player.PlayerID);
     }
 }
