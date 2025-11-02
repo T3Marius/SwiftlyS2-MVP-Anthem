@@ -24,7 +24,7 @@ public class MenuManager
     public void ShowMVP(IPlayer player)
     {
         IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_main_menu_title"]);
-        menu.RenderColor = new(0, 255, 0);
+        menu.RenderColor = new(_config.MenuColor[0], _config.MenuColor[1], _config.MenuColor[2]);
 
         menu.ShouldFreeze = _config.FreezePlayerInMenu;
         menu.HasSound = _config.EnableMenuSounds;
@@ -66,7 +66,7 @@ public class MenuManager
     {
         IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_categories_title"]);
         menu.Parent = parentMenu;
-        menu.RenderColor = new(0, 255, 0);
+        menu.RenderColor = new(_config.MenuColor[0], _config.MenuColor[1], _config.MenuColor[2]);
 
         menu.ShouldFreeze = _config.FreezePlayerInMenu;
         menu.HasSound = _config.EnableMenuSounds;
@@ -101,7 +101,7 @@ public class MenuManager
     {
         IMenu menu = _core.Menus.CreateMenu(categoryName);
         menu.Parent = parentMenu;
-        menu.RenderColor = new(0, 255, 0);
+        menu.RenderColor = new(_config.MenuColor[0], _config.MenuColor[1], _config.MenuColor[2]);
 
         menu.ShouldFreeze = _config.FreezePlayerInMenu;
         menu.HasSound = _config.EnableMenuSounds;
@@ -120,7 +120,7 @@ public class MenuManager
     {
         IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_confirm_menu_title", mvpSettings.MVPName]);
         menu.Parent = parentMenu;
-        menu.RenderColor = new(0, 255, 0);
+        menu.RenderColor = new(_config.MenuColor[0], _config.MenuColor[1], _config.MenuColor[2]);
 
         menu.ShouldFreeze = _config.FreezePlayerInMenu;
         menu.HasSound = _config.EnableMenuSounds;
@@ -130,7 +130,7 @@ public class MenuManager
         menu.Builder.AddButton(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_yes"], (p) =>
         {
             string mvpName = mvpSettings.MVPName;
-            string mvpSound = mvpSettings.MVPSound;
+            string mvpSound = mvpSettings.MVPPath;
 
             _core.Scheduler.NextTick(async () =>
             {
@@ -147,18 +147,9 @@ public class MenuManager
             if (playerSettings == null)
                 return;
 
-            var soundEvent = new SoundEvent()
-            {
-                Name = mvpSettings.MVPSound,
-                Volume = playerSettings.Volume
-            };
-
             if (playerSettings.Volume > 0)
             {
-                soundEvent.Recipients.AddRecipient(p.PlayerID);
-                soundEvent.SourceEntityIndex = -1;
-                soundEvent.Emit();
-                soundEvent.Recipients.RemoveRecipient(p.PlayerID);
+                _libraryManager.PlaySound(player, mvpSettings.MVPPath, playerSettings.Volume);
 
                 p.SendMessage(MessageType.Chat, _core.Translation.GetPlayerLocalizer(player)["prefix"] + _core.Translation.GetPlayerLocalizer(player)["mvp_preview", mvpSettings.MVPName]);
             }
@@ -177,7 +168,7 @@ public class MenuManager
     {
         IMenu menu = _core.Menus.CreateMenu(_core.Translation.GetPlayerLocalizer(player)["mvp_remove_mvp_title", mvpName]);
         menu.Parent = parentMenu;
-        menu.RenderColor = new(0, 255, 0);
+        menu.RenderColor = new(_config.MenuColor[0], _config.MenuColor[1], _config.MenuColor[2]);
 
         menu.ShouldFreeze = _config.FreezePlayerInMenu;
         menu.HasSound = _config.EnableMenuSounds;

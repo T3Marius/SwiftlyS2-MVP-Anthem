@@ -1,3 +1,4 @@
+using AudioApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -26,7 +27,12 @@ public partial class MVP_Anthem : BasePlugin
   private DatabaseManager? DatabaseManager;
   private PluginConfig? _config;
   private Library? _libraryManager;
+  public static IAudioApi AudioApi = null!;
   public MVP_Anthem(ISwiftlyCore core) : base(core) { }
+  public override void UseSharedInterface(IInterfaceManager interfaceManager)
+  {
+    AudioApi = interfaceManager.GetSharedInterface<IAudioApi>("audio");
+  }
   public override void Load(bool hotReload)
   {
     Core.Configuration
@@ -91,7 +97,7 @@ public partial class MVP_Anthem : BasePlugin
 
         Task.Run(async () =>
         {
-          await DatabaseManager.SaveMvp(player, randomMvp.settings.MVPName, randomMvp.settings.MVPSound, _config.DefaultVolume);
+          await DatabaseManager.SaveMvp(player, randomMvp.settings.MVPName, randomMvp.settings.MVPPath, _config.DefaultVolume);
         });
       }
       else
@@ -111,27 +117,6 @@ public partial class MVP_Anthem : BasePlugin
       });
     }
     return HookResult.Continue;
-  }
-  [EventListener<EventDelegates.OnPrecacheResource>]
-  public void OnPrecacheResource(IOnPrecacheResourceEvent @event)
-  {
-    if (_config == null)
-      return;
-
-    foreach (var file in _config.SoundEventFiles)
-    {
-      Core.Logger.LogInformation($"Precaching sound event file: {file}");
-      try
-      {
-        @event.AddItem(file);
-        Core.Logger.LogInformation($"{file} precached succesfully.");
-      }
-      catch (Exception ex)
-      {
-        Core.Logger.LogError($"Failed to precache sound event file: {ex.Message}");
-        throw;
-      }
-    }
   }
   [GameEventHandler(HookMode.Pre)]
   public HookResult EventRoundMvp(EventRoundMvp @event)
@@ -160,18 +145,9 @@ public partial class MVP_Anthem : BasePlugin
 
         if (otherPlayerMvp?.Volume > 0)
         {
-          var soundEvent = new SoundEvent()
-          {
-            Name = playerMvp.MVPSound,
-            Volume = otherPlayerMvp.Volume
-          };
-          soundEvent.SourceEntityIndex = -1;
-          soundEvent.Recipients.AddRecipient(otherPlayer.PlayerID);
-
           Core.Scheduler.NextTick(() =>
           {
-            soundEvent.Emit();
-            soundEvent.Recipients.RemoveRecipient(otherPlayer.PlayerID);
+            _libraryManager?.PlaySound(player, playerMvp.MVPSound, otherPlayerMvp.Volume);
           });
         }
       }
@@ -188,7 +164,7 @@ public partial class MVP_Anthem : BasePlugin
     {
       foreach (var (key, settings) in category)
       {
-        if (settings.MVPSound == mvpSound)
+        if (settings.MVPPath == mvpSound)
           return (settings, key);
       }
     }
