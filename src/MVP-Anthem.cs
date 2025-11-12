@@ -16,7 +16,7 @@ namespace MVP_Anthem;
 
 [PluginMetadata(
   Id = "MVP_Anthem",
-  Version = "1.0.3",
+  Version = "1.0.4",
   Name = "MVP-Anthem",
   Author = "T3Marius",
   Description = "Simple MVP plugin"

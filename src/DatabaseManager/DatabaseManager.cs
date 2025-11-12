@@ -25,9 +25,8 @@ public class DatabaseManager
             dbConn.Open();
             return dbConn;
         }
-        catch (Exception ex)
+        catch
         {
-            _core.Logger.LogError("[MVP-ANTHEM] Failed to open DB connection: {Message}", ex.Message);
             throw;
         }
     }
@@ -60,12 +59,9 @@ public class DatabaseManager
                   ";
 
             int result = await conn.ExecuteAsync(createTableQuery);
-
-            _core.Logger.LogInformation("Table created successfully. Rows affected: {Rows}", result);
         }
-        catch (Exception ex)
+        catch
         {
-            _core.Logger.LogError("[MVP-ANTHEM] Failed to create DB table: {Message}", ex.Message);
             throw;
         }
     }
@@ -74,7 +70,6 @@ public class DatabaseManager
     {
         if (player == null)
         {
-            _core.Logger.LogError("[MVP-ANTHEM] SaveMvp failed: player is null.");
             return;
         }
 
@@ -104,7 +99,6 @@ public class DatabaseManager
 
             if (updates.Count == 0)
             {
-                _core.Logger.LogInformation("[MVP-ANTHEM] No fields to update for {SteamID}.", player.SteamID);
                 return;
             }
 
@@ -123,15 +117,9 @@ public class DatabaseManager
             };
 
             int result = await conn.ExecuteAsync(query, parameters);
-
-            _core.Logger.LogInformation(
-                "[MVP-ANTHEM] Updated MVP data for {SteamID} (Rows affected: {Rows})",
-                player.SteamID, result
-            );
         }
-        catch (Exception ex)
+        catch
         {
-            _core.Logger.LogError("[MVP-ANTHEM] Failed to save MVP data for {PlayerName}: {Message}", player?.Controller?.PlayerName ?? "Unknown", ex.Message);
         }
     }
     public PlayerMvp? GetMvp(IPlayer player)
@@ -142,7 +130,6 @@ public class DatabaseManager
     {
         if (player == null)
         {
-            _core.Logger.LogError("Player is null, exiting.");
             return null;
         }
 
@@ -163,15 +150,13 @@ public class DatabaseManager
 
             if (result == null)
             {
-                _core.Logger.LogInformation("[MVP-ANTHEM] No MVP settings found for {SteamID}.", player.SteamID);
                 return null;
             }
 
             return result;
         }
-        catch (Exception ex)
+        catch
         {
-            _core.Logger.LogError("[MVP-ANTHEM] Failed to get player MVP: {Message}", ex.Message);
             throw;
         }
     }
@@ -180,7 +165,6 @@ public class DatabaseManager
     {
         if (player == null)
         {
-            _core.Logger.LogError("[MVP-ANTHEM] RemoveMvp failed: player is null.");
             return;
         }
 
@@ -198,15 +182,6 @@ public class DatabaseManager
 
             int result = await conn.ExecuteAsync(query, new { SteamId = player.SteamID });
 
-            if (result > 0)
-            {
-                _core.Logger.LogInformation("[MVP-ANTHEM] Cleared MVP name and sound for {SteamID}.", player.SteamID);
-            }
-            else
-            {
-                _core.Logger.LogInformation("[MVP-ANTHEM] No MVP record found to clear for {SteamID}.", player.SteamID);
-            }
-
             if (_mvps.ContainsKey(player.PlayerID))
             {
                 var current = _mvps[player.PlayerID];
@@ -215,16 +190,14 @@ public class DatabaseManager
                 _mvps[player.PlayerID] = current;
             }
         }
-        catch (Exception ex)
+        catch
         {
-            _core.Logger.LogError("[MVP-ANTHEM] Failed to clear MVP data: {Message}", ex.Message);
         }
     }
     public async Task<PlayerMvp?> LoadMvp(IPlayer player, float defaultVolume)
     {
         if (player == null)
         {
-            _core.Logger.LogError("[MVP-ANTHEM] LoadMvp failed: player is null.");
             return null;
         }
 
@@ -252,9 +225,6 @@ public class DatabaseManager
                     SteamId = player.SteamID,
                     Volume = defaultVolume
                 });
-
-                _core.Logger.LogInformation("[MVP-ANTHEM] New player record created for {SteamID} with default volume {Volume}.",
-                    player.SteamID, defaultVolume);
             }
 
             string selectQuery = @"
@@ -270,20 +240,15 @@ public class DatabaseManager
 
             if (mvp == null)
             {
-                _core.Logger.LogWarning("[MVP-ANTHEM] Unexpected: player record missing after insert for {SteamID}.", player.SteamID);
                 return new PlayerMvp { MVPName = "", MVPSound = "", Volume = defaultVolume };
             }
 
             _mvps[player.PlayerID] = mvp;
-            _core.Logger.LogInformation("[MVP-ANTHEM] Loaded MVP data for {SteamID}: {Name}, {Sound}, Vol={Volume}",
-                player.SteamID, mvp.MVPName, mvp.MVPSound, mvp.Volume);
 
             return mvp;
         }
-        catch (Exception ex)
+        catch
         {
-            _core.Logger.LogError("[MVP-ANTHEM] Failed to load MVP data for {PlayerName}: {Message}",
-                player.Controller?.PlayerName ?? "Unknown", ex.Message);
             throw;
         }
     }

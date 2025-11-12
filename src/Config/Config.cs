@@ -11,6 +11,7 @@ public class PluginConfig
     public float CenterTimer { get; set; } = 10.0f;
     public float AlertTimer { get; set; } = 10.0f;
     public List<int> MenuColor { get; set; } = [255, 0, 0];
+    public bool GradientTitleColor { get; set; } = true;
     public Commands_Config Commands { get; set; } = new();
     public Dictionary<string, Dictionary<string, MVP_Settings>> MVPSettings { get; set; } = new()
     {
